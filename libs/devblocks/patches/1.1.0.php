@@ -9,15 +9,15 @@ $prefix = (APP_DB_PREFIX != '') ? APP_DB_PREFIX.'_' : ''; // [TODO] Cleanup
 
 list($columns, $indexes) = $db->metaTable($prefix.'acl');
 
-if(isset($columns['is_default'])) {
-	$db->ExecuteMaster("ALTER TABLE ${prefix}acl DROP COLUMN is_default");
+if (isset($columns['is_default'])) {
+    $db->ExecuteMaster("ALTER TABLE ${prefix}acl DROP COLUMN is_default");
 }
 
 // ============================================================================
 // Classloading cache from plugin manifests
 
-if(!isset($tables[$prefix.'class_loader'])) {
-	$sql = sprintf("
+if (!isset($tables[$prefix.'class_loader'])) {
+    $sql = sprintf("
 		CREATE TABLE IF NOT EXISTS ${prefix}class_loader (
 			class VARCHAR(255) DEFAULT '' NOT NULL,
 			plugin_id VARCHAR(255) DEFAULT '' NOT NULL,
@@ -25,14 +25,14 @@ if(!isset($tables[$prefix.'class_loader'])) {
 			PRIMARY KEY (class)
 		) ENGINE=%s;
 	", APP_DB_ENGINE);
-	$db->ExecuteMaster($sql);	
+    $db->ExecuteMaster($sql);
 }
 
 // ============================================================================
 // Front controller cache from plugin manifests
 
-if(!isset($tables[$prefix.'uri_routing'])) {
-	$sql = sprintf("
+if (!isset($tables[$prefix.'uri_routing'])) {
+    $sql = sprintf("
 		CREATE TABLE IF NOT EXISTS ${prefix}uri_routing (
 			uri VARCHAR(255) DEFAULT '' NOT NULL,
 			plugin_id VARCHAR(255) DEFAULT '' NOT NULL,
@@ -40,7 +40,7 @@ if(!isset($tables[$prefix.'uri_routing'])) {
 			PRIMARY KEY (uri)
 		) ENGINE=%s;
 	", APP_DB_ENGINE);
-	$db->ExecuteMaster($sql);
+    $db->ExecuteMaster($sql);
 }
 
-return TRUE;
+return true;

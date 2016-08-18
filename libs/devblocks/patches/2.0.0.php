@@ -10,17 +10,17 @@ $prefix = (APP_DB_PREFIX != '') ? APP_DB_PREFIX.'_' : ''; // [TODO] Cleanup
 list($columns, $indexes) = $db->metaTable($prefix.'property_store');
 
 // Fix blob encoding
-if(isset($columns['value'])) {
-	if(0 == strcasecmp('mediumblob',$columns['value']['type'])) {
-		$sql = sprintf("ALTER TABLE ${prefix}property_store CHANGE COLUMN value value TEXT");
-		$db->ExecuteMaster($sql);
-	}
+if (isset($columns['value'])) {
+    if (0 == strcasecmp('mediumblob', $columns['value']['type'])) {
+        $sql = sprintf("ALTER TABLE ${prefix}property_store CHANGE COLUMN value value TEXT");
+        $db->ExecuteMaster($sql);
+    }
 }
 
 // Drop instance ID
-if(isset($columns['instance_id'])) {
-	$db->ExecuteMaster("DELETE FROM ${prefix}property_store WHERE instance_id > 0");
-	$db->ExecuteMaster("ALTER TABLE ${prefix}property_store DROP COLUMN instance_id");
+if (isset($columns['instance_id'])) {
+    $db->ExecuteMaster("DELETE FROM ${prefix}property_store WHERE instance_id > 0");
+    $db->ExecuteMaster("ALTER TABLE ${prefix}property_store DROP COLUMN instance_id");
 }
 
 // ============================================================================
@@ -29,20 +29,20 @@ if(isset($columns['instance_id'])) {
 list($columns, $indexes) = $db->metaTable($prefix.'plugin');
 
 // Drop 'file'
-if(isset($columns['file'])) {
-	$db->ExecuteMaster("ALTER TABLE ${prefix}plugin DROP COLUMN file");
+if (isset($columns['file'])) {
+    $db->ExecuteMaster("ALTER TABLE ${prefix}plugin DROP COLUMN file");
 }
 
 // Drop 'class'
-if(isset($columns['class'])) {
-	$db->ExecuteMaster("ALTER TABLE ${prefix}plugin DROP COLUMN class");
+if (isset($columns['class'])) {
+    $db->ExecuteMaster("ALTER TABLE ${prefix}plugin DROP COLUMN class");
 }
 
 // ============================================================================
 // devblocks_setting
 
-if(!isset($tables['devblocks_setting'])) {
-	$sql = sprintf("
+if (!isset($tables['devblocks_setting'])) {
+    $sql = sprintf("
 		CREATE TABLE IF NOT EXISTS devblocks_setting (
 	    	plugin_id VARCHAR(255) DEFAULT '' NOT NULL,
 			setting VARCHAR(32) DEFAULT '' NOT NULL,
@@ -50,14 +50,14 @@ if(!isset($tables['devblocks_setting'])) {
 			PRIMARY KEY (plugin_id, setting)
 		) ENGINE=%s;
 	", APP_DB_ENGINE);
-	$db->ExecuteMaster($sql);	
+    $db->ExecuteMaster($sql);
 }
 
 // ============================================================================
 // devblocks_template
 
-if(!isset($tables['devblocks_template'])) {
-	$sql = sprintf("
+if (!isset($tables['devblocks_template'])) {
+    $sql = sprintf("
 		CREATE TABLE IF NOT EXISTS devblocks_template (
 	    	id INT UNSIGNED NOT NULL AUTO_INCREMENT,
 	    	plugin_id VARCHAR(255) DEFAULT '' NOT NULL,
@@ -68,17 +68,17 @@ if(!isset($tables['devblocks_template'])) {
 			PRIMARY KEY (id)
 		) ENGINE=%s;
 	", APP_DB_ENGINE);
-	$db->ExecuteMaster($sql);	
+    $db->ExecuteMaster($sql);
 }
 
 // Update key
 list($columns, $indexes) = $db->metaTable('devblocks_template');
 
-if(isset($columns['id']) 
-	&& ('int(10) unsigned' != $columns['id']['type'] 
-	|| 'auto_increment' != $columns['id']['extra'])
+if (isset($columns['id'])
+    && ('int(10) unsigned' != $columns['id']['type']
+    || 'auto_increment' != $columns['id']['extra'])
 ) {
-	$db->ExecuteMaster("ALTER TABLE devblocks_template MODIFY COLUMN id INT UNSIGNED NOT NULL AUTO_INCREMENT");
+    $db->ExecuteMaster("ALTER TABLE devblocks_template MODIFY COLUMN id INT UNSIGNED NOT NULL AUTO_INCREMENT");
 }
 
 // ===========================================================================
@@ -86,8 +86,8 @@ if(isset($columns['id'])
 
 list($columns, $indexes) = $db->metaTable($prefix.'plugin');
 
-if(!isset($columns['templates_json'])) {
-	$db->ExecuteMaster("ALTER TABLE ${prefix}plugin ADD COLUMN templates_json MEDIUMTEXT");
+if (!isset($columns['templates_json'])) {
+    $db->ExecuteMaster("ALTER TABLE ${prefix}plugin ADD COLUMN templates_json MEDIUMTEXT");
 }
 
 // ============================================================================
@@ -96,26 +96,26 @@ if(!isset($columns['templates_json'])) {
 list($columns, $indexes) = $db->metaTable($prefix.'extension');
 
 // Fix blob encoding
-if(isset($columns['params'])) {
-	if(0==strcasecmp('mediumblob',$columns['params']['type'])) {
-		$sql = sprintf("ALTER TABLE ${prefix}extension CHANGE COLUMN params params TEXT");
-		$db->ExecuteMaster($sql);
-	}
+if (isset($columns['params'])) {
+    if (0==strcasecmp('mediumblob', $columns['params']['type'])) {
+        $sql = sprintf("ALTER TABLE ${prefix}extension CHANGE COLUMN params params TEXT");
+        $db->ExecuteMaster($sql);
+    }
 }
 
 // ============================================================================
 // Drop ADODB sessions
 
-if(isset($tables[$prefix.'session'])) {
-	$db->ExecuteMaster("DROP TABLE ${prefix}session");
-	unset($tables[$prefix.'session']);	
+if (isset($tables[$prefix.'session'])) {
+    $db->ExecuteMaster("DROP TABLE ${prefix}session");
+    unset($tables[$prefix.'session']);
 }
 
 // ============================================================================
 // Add Devblocks-backed sessions
 
-if(!isset($tables['devblocks_session'])) {
-	$sql = sprintf("
+if (!isset($tables['devblocks_session'])) {
+    $sql = sprintf("
 		CREATE TABLE IF NOT EXISTS devblocks_session (
 			session_key VARCHAR(64) DEFAULT '' NOT NULL,
 			created INT UNSIGNED DEFAULT 0 NOT NULL,
@@ -126,7 +126,7 @@ if(!isset($tables['devblocks_session'])) {
 			INDEX updated (updated)
 		) ENGINE=%s;
 	", APP_DB_ENGINE);
-	$db->ExecuteMaster($sql);
+    $db->ExecuteMaster($sql);
 }
 
 // ============================================================================
@@ -134,23 +134,23 @@ if(!isset($tables['devblocks_session'])) {
 
 list($columns, $indexes) = $db->metaTable('devblocks_session');
 
-if(isset($columns['session_data']) && 
-	0 != strcasecmp('mediumtext', $columns['session_data']['type'])) {
-		$db->ExecuteMaster('ALTER TABLE devblocks_session MODIFY COLUMN session_data MEDIUMTEXT');		
+if (isset($columns['session_data']) &&
+    0 != strcasecmp('mediumtext', $columns['session_data']['type'])) {
+    $db->ExecuteMaster('ALTER TABLE devblocks_session MODIFY COLUMN session_data MEDIUMTEXT');
 }
 
 list($columns, $indexes) = $db->metaTable($prefix.'event_point');
 
-if(isset($columns['params'])
-	&& 0 != strcasecmp('mediumtext',$columns['params']['type'])) {
-		$db->ExecuteMaster("ALTER TABLE ${prefix}event_point MODIFY COLUMN params MEDIUMTEXT");
+if (isset($columns['params'])
+    && 0 != strcasecmp('mediumtext', $columns['params']['type'])) {
+    $db->ExecuteMaster("ALTER TABLE ${prefix}event_point MODIFY COLUMN params MEDIUMTEXT");
 }
 
 // ============================================================================
 // Storage profiles
 
-if(!isset($tables['devblocks_storage_profile'])) {
-	$sql = sprintf("
+if (!isset($tables['devblocks_storage_profile'])) {
+    $sql = sprintf("
 		CREATE TABLE IF NOT EXISTS devblocks_storage_profile (
 			id INT UNSIGNED NOT NULL AUTO_INCREMENT,
 			name varchar(128) NOT NULL DEFAULT '',
@@ -160,14 +160,14 @@ if(!isset($tables['devblocks_storage_profile'])) {
 			INDEX extension_id (extension_id)
 		) ENGINE=%s;
 	", APP_DB_ENGINE);
-	$db->ExecuteMaster($sql) or die($db->ErrorMsg());
+    $db->ExecuteMaster($sql) or die($db->ErrorMsg());
 }
 
 // ============================================================================
 // Force enable 'devblocks.core' plugin
 
 $sql = sprintf("UPDATE %splugin SET enabled=1 WHERE id='devblocks.core'",
-	$prefix
+    $prefix
 );
 $db->ExecuteMaster($sql) or die($db->ErrorMsg());
 
@@ -176,9 +176,9 @@ $db->ExecuteMaster($sql) or die($db->ErrorMsg());
 
 list($columns, $indexes) = $db->metaTable('devblocks_setting');
 
-if(isset($columns['value'])
-	&& 0 != strcasecmp('text',$columns['value']['type'])) {
-		$db->ExecuteMaster("ALTER TABLE devblocks_setting MODIFY COLUMN value TEXT");
+if (isset($columns['value'])
+    && 0 != strcasecmp('text', $columns['value']['type'])) {
+    $db->ExecuteMaster("ALTER TABLE devblocks_setting MODIFY COLUMN value TEXT");
 }
 
 // ===========================================================================
@@ -186,12 +186,12 @@ if(isset($columns['value'])
 
 list($columns, $indexes) = $db->metaTable($prefix.'plugin');
 
-if(isset($columns['templates_json'])) {
-	$db->ExecuteMaster("ALTER TABLE ${prefix}plugin DROP COLUMN templates_json");
+if (isset($columns['templates_json'])) {
+    $db->ExecuteMaster("ALTER TABLE ${prefix}plugin DROP COLUMN templates_json");
 }
 
-if(!isset($columns['manifest_cache_json'])) {
-	$db->ExecuteMaster("ALTER TABLE ${prefix}plugin ADD COLUMN manifest_cache_json MEDIUMTEXT");
+if (!isset($columns['manifest_cache_json'])) {
+    $db->ExecuteMaster("ALTER TABLE ${prefix}plugin ADD COLUMN manifest_cache_json MEDIUMTEXT");
 }
 
-return TRUE;
+return true;
