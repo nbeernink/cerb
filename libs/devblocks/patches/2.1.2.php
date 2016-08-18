@@ -8,18 +8,19 @@ $prefix = (APP_DB_PREFIX != '') ? APP_DB_PREFIX.'_' : '';
 
 list($columns, $indexes) = $db->metaTable($prefix.'plugin');
 
-if(!isset($columns['description']))
-	return FALSE;
+if (!isset($columns['description'])) {
+    return false;
+}
 
-if(substr(strtolower($columns['description']['type']),0,7) == 'varchar') {
-	$db->ExecuteMaster("ALTER TABLE ${prefix}plugin MODIFY COLUMN description TEXT");
+if (substr(strtolower($columns['description']['type']), 0, 7) == 'varchar') {
+    $db->ExecuteMaster("ALTER TABLE ${prefix}plugin MODIFY COLUMN description TEXT");
 }
 
 // ===========================================================================
 // devblocks_storage_deletes
 
-if(!isset($tables['devblocks_storage_queue_delete'])) {
-	$sql = sprintf("
+if (!isset($tables['devblocks_storage_queue_delete'])) {
+    $sql = sprintf("
 		CREATE TABLE IF NOT EXISTS devblocks_storage_queue_delete (
 			storage_namespace VARCHAR(64) NOT NULL DEFAULT '',
 			storage_key VARCHAR(255) NOT NULL DEFAULT '',
@@ -28,9 +29,9 @@ if(!isset($tables['devblocks_storage_queue_delete'])) {
 			INDEX ns_ext_profile (storage_namespace, storage_extension, storage_profile_id)
 		) ENGINE=%s;
 	", APP_DB_ENGINE);
-	$db->ExecuteMaster($sql);
+    $db->ExecuteMaster($sql);
 
-	$tables['devblocks_storage_queue_delete'] = 'devblocks_storage_queue_delete';
+    $tables['devblocks_storage_queue_delete'] = 'devblocks_storage_queue_delete';
 }
 
-return TRUE;
+return true;

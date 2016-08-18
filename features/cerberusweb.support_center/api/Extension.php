@@ -40,97 +40,107 @@
  *	 Founders at Webgroup Media LLC; Developers of Cerb
  */
 
-abstract class Extension_UmScRssController extends DevblocksExtension {
-	function handleRequest(DevblocksHttpRequest $request) {
-		//$path = $request->path;
-	}
+abstract class Extension_UmScRssController extends DevblocksExtension
+{
+    public function handleRequest(DevblocksHttpRequest $request)
+    {
+        //$path = $request->path;
+    }
 };
 
-abstract class Extension_UmScController extends DevblocksExtension implements DevblocksHttpRequestHandler {
-	private $portal = '';
-	
-	/*
-	 * Site Key
-	 * Site Name
-	 * Site URL
-	 */
-	
-	/**
-	 * @param DevblocksHttpRequest
-	 * @return DevblocksHttpResponse
-	 */
-	public function handleRequest(DevblocksHttpRequest $request) {
-		$path = $request->path;
-		@$a = DevblocksPlatform::importGPC($_REQUEST['a'],'string');
+abstract class Extension_UmScController extends DevblocksExtension implements DevblocksHttpRequestHandler
+{
+    private $portal = '';
+    
+    /*
+     * Site Key
+     * Site Name
+     * Site URL
+     */
+    
+    /**
+     * @param DevblocksHttpRequest
+     * @return DevblocksHttpResponse
+     */
+    public function handleRequest(DevblocksHttpRequest $request)
+    {
+        $path = $request->path;
+        @$a = DevblocksPlatform::importGPC($_REQUEST['a'], 'string');
 
-		if(empty($a)) {
-			@array_shift($path); // controller
-			@$action = array_shift($path) . 'Action';
-		} else {
-			@$action = $a . 'Action';
-		}
+        if (empty($a)) {
+            @array_shift($path); // controller
+            @$action = array_shift($path) . 'Action';
+        } else {
+            @$action = $a . 'Action';
+        }
 
-		switch($action) {
-			case NULL:
-				// [TODO] Index/page render
-				break;
+        switch ($action) {
+            case null:
+                // [TODO] Index/page render
+                break;
 //
-			default:
-				// Default action, call arg as a method suffixed with Action
-				if(method_exists($this,$action)) {
-					call_user_func(array(&$this, $action)); // [TODO] Pass HttpRequest as arg?
-				}
-				break;
-		}
-	}
-	
-	public function writeResponse(DevblocksHttpResponse $response) {
-		/* Expect Overload */
-	}
-	
-	public function renderSidebar(DevblocksHttpResponse $response) {
-		/* Expect Overload */
-		return;
-	}
-	
-	public function isVisible() {
-		/* Expect Overload */
-		return true;
-	}
-	
-	public function configure(Model_CommunityTool $instance) {
-		// [TODO] Translate
-		echo "This module has no configuration options.<br><br>";
-	}
-	
-	public function saveConfiguration(Model_CommunityTool $instance) {
-		/* Expect Overload */
-	}
-	
+            default:
+                // Default action, call arg as a method suffixed with Action
+                if (method_exists($this, $action)) {
+                    call_user_func(array(&$this, $action)); // [TODO] Pass HttpRequest as arg?
+                }
+                break;
+        }
+    }
+    
+    public function writeResponse(DevblocksHttpResponse $response)
+    {
+        /* Expect Overload */
+    }
+    
+    public function renderSidebar(DevblocksHttpResponse $response)
+    {
+        /* Expect Overload */
+        return;
+    }
+    
+    public function isVisible()
+    {
+        /* Expect Overload */
+        return true;
+    }
+    
+    public function configure(Model_CommunityTool $instance)
+    {
+        // [TODO] Translate
+        echo "This module has no configuration options.<br><br>";
+    }
+    
+    public function saveConfiguration(Model_CommunityTool $instance)
+    {
+        /* Expect Overload */
+    }
 };
 
-abstract class Extension_ScLoginAuthenticator extends DevblocksExtension {
-	/**
-	 * draws html form for adding necessary settings (host, port, etc) to be stored in the db
-	 */
+abstract class Extension_ScLoginAuthenticator extends DevblocksExtension
+{
+    /**
+     * draws html form for adding necessary settings (host, port, etc) to be stored in the db
+     */
 //	function renderConfigForm() {
 //	}
-	
-	/**
-	 * Receives posted config form, saves to manifest
-	 */
+    
+    /**
+     * Receives posted config form, saves to manifest
+     */
 //	function saveConfiguration() {
 //		$field_value = DevblocksPlatform::importGPC($_POST['field_value']);
 //		$this->params['field_name'] = $field_value;
 //	}
-	
-	abstract function writeResponse(DevblocksHttpResponse $response);
-	
-	/**
-	 * release any resources tied up by the authenticate process, if necessary
-	 */
-	function signoff() {
-		$umsession = ChPortalHelper::getSession();
-		$umsession->logout();
-	}
+    
+    abstract public function writeResponse(DevblocksHttpResponse $response);
+    
+    /**
+     * release any resources tied up by the authenticate process, if necessary
+     */
+    public function signoff()
+    {
+        $umsession = ChPortalHelper::getSession();
+        $umsession->logout();
+    }
 };

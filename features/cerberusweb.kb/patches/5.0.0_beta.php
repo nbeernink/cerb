@@ -7,33 +7,35 @@ $tables = $db->metaTables();
 
 list($columns, $indexes) = $db->metaTable('kb_article');
 
-if(isset($indexes['title'])) {
-	$db->ExecuteMaster("ALTER TABLE kb_article DROP INDEX title");
+if (isset($indexes['title'])) {
+    $db->ExecuteMaster("ALTER TABLE kb_article DROP INDEX title");
 }
 
-if(isset($indexes['content'])) {
-	$db->ExecuteMaster("ALTER TABLE kb_article DROP INDEX content");	
+if (isset($indexes['content'])) {
+    $db->ExecuteMaster("ALTER TABLE kb_article DROP INDEX content");
 }
 
 // ===========================================================================
 // Drop kb_article.content_raw
 
-if(!isset($tables['kb_article']))
-	return FALSE;
+if (!isset($tables['kb_article'])) {
+    return false;
+}
 
 list($columns, $indexes) = $db->metaTable('kb_article');
 
-if(isset($columns['content_raw'])) {
-	$db->ExecuteMaster("ALTER TABLE kb_article DROP COLUMN content_raw");
+if (isset($columns['content_raw'])) {
+    $db->ExecuteMaster("ALTER TABLE kb_article DROP COLUMN content_raw");
 }
 
 // ===========================================================================
 // Plaintext->Markdown
 
-if(!isset($tables['kb_article']))
-	return FALSE;
-	
+if (!isset($tables['kb_article'])) {
+    return false;
+}
+    
 $db->ExecuteMaster("UPDATE kb_article SET content=REPLACE(content,\"\\r\\n\",\"\\n\") WHERE format=0");
 $db->ExecuteMaster("UPDATE kb_article SET format=2, content=REPLACE(content,\"\\n\",\"  \\n\") WHERE format=0");
 
-return TRUE;
+return true;

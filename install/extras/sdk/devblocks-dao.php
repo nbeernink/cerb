@@ -16,32 +16,31 @@ name VARCHAR(255) DEFAULT '',
 updated_at INT UNSIGNED NOT NULL DEFAULT 0,
 ";
 
-foreach($tables as $table_name => $field_strs) {
-	// Class
-	$class_name = str_replace(' ','',ucwords(str_replace('_',' ',$table_name)));
-	$object_name = ucwords(str_replace('_',' ',$table_name));
+foreach ($tables as $table_name => $field_strs) {
+    // Class
+    $class_name = str_replace(' ', '', ucwords(str_replace('_', ' ', $table_name)));
+    $object_name = ucwords(str_replace('_', ' ', $table_name));
 
-	$table_name = strtolower($table_name);
-	
-	// Fields
-	$fields = array();
+    $table_name = strtolower($table_name);
+    
+    // Fields
+    $fields = array();
 
-	$schema = trim($field_strs);
-	$schema = str_replace(array("\r"), array("\n"), $schema);
-	$schema = str_replace(array("\n\n"), array("\n"), $schema);
-	
-	foreach(explode("\n", $schema) as $field_str) {
-		$field_props = explode(' ', rtrim($field_str, ",\n\r "));
-		$fields[trim($field_props[0])] = trim($field_props[1]);
-	}
-	
-	// Contexts
-	
-	$ctx_var_model = $table_name;
-	$ctx_ext_id = sprintf("cerberusweb.contexts.%s",
-		strtolower(str_replace('_','.',$table_name))
-	);
-?>
+    $schema = trim($field_strs);
+    $schema = str_replace(array("\r"), array("\n"), $schema);
+    $schema = str_replace(array("\n\n"), array("\n"), $schema);
+    
+    foreach (explode("\n", $schema) as $field_str) {
+        $field_props = explode(' ', rtrim($field_str, ",\n\r "));
+        $fields[trim($field_props[0])] = trim($field_props[1]);
+    }
+    
+    // Contexts
+    
+    $ctx_var_model = $table_name;
+    $ctx_ext_id = sprintf("cerberusweb.contexts.%s",
+        strtolower(str_replace('_', '.', $table_name))
+    ); ?>
 
 <h2>DAO</h2>
 
@@ -49,13 +48,12 @@ foreach($tables as $table_name => $field_strs) {
 <textarea style="width:98%;height:200px;">
 class DAO_<?php echo $class_name; ?> extends Cerb_ORMHelper {
 <?php
-foreach($fields as $field_name => $field_type) {
-	printf("\tconst %s = '%s';\n",
-		strtoupper($field_name),
-		$field_name
-	);
-}
-?>
+foreach ($fields as $field_name => $field_type) {
+        printf("\tconst %s = '%s';\n",
+        strtoupper($field_name),
+        $field_name
+    );
+    } ?>
 
 	static function create($fields) {
 		$db = DevblocksPlatform::getDatabaseService();
@@ -227,13 +225,12 @@ foreach($fields as $field_name => $field_type) {
 		while($row = mysqli_fetch_assoc($rs)) {
 			$object = new Model_<?php echo $class_name; ?>();
 <?php
-foreach($fields as $field_name => $field_type) {
-	printf("\t\t\t\$object->%s = \$row['%s'];\n",
-		$field_name,
-		$field_name
-	);
-}
-?>
+foreach ($fields as $field_name => $field_type) {
+        printf("\t\t\t\$object->%s = \$row['%s'];\n",
+        $field_name,
+        $field_name
+    );
+    } ?>
 			$objects[$object->id] = $object;
 		}
 		
@@ -280,24 +277,23 @@ foreach($fields as $field_name => $field_type) {
 		$select_sql = sprintf("SELECT ".
 <?php
 $num_fields = 0;
-foreach($fields as $field_name => $field_type) {
-	$num_fields++;
-	printf("\t\t\t\"%s.%s as %%s%s",
-		$table_name,
-		$field_name,
-		(($num_fields==count($fields)) ? " \",\n" : ", \".\n") // ending
-	);
-}
-$num_fields = 0;
-foreach($fields as $field_name => $field_type) {
-	$num_fields++;
-	printf("\t\t\t\tSearchFields_%s::%s%s",
-		$class_name,
-		strtoupper($field_name),
-		($num_fields==count($fields)) ? "\n" : ",\n"
-	);
-}
-?>
+    foreach ($fields as $field_name => $field_type) {
+        $num_fields++;
+        printf("\t\t\t\"%s.%s as %%s%s",
+        $table_name,
+        $field_name,
+        (($num_fields==count($fields)) ? " \",\n" : ", \".\n") // ending
+    );
+    }
+    $num_fields = 0;
+    foreach ($fields as $field_name => $field_type) {
+        $num_fields++;
+        printf("\t\t\t\tSearchFields_%s::%s%s",
+        $class_name,
+        strtoupper($field_name),
+        ($num_fields==count($fields)) ? "\n" : ",\n"
+    );
+    } ?>
 			);
 			
 		$join_sql = "FROM <?php echo $table_name; ?> ".
@@ -430,14 +426,13 @@ foreach($fields as $field_name => $field_type) {
 <textarea style="width:98%;height:200px;">
 class SearchFields_<?php echo $class_name; ?> extends DevblocksSearchFields {
 <?php
-foreach($fields as $field_name => $field_type) {
-	printf("\tconst %s = '%s_%s';\n",
-		strtoupper($field_name),
-		substr($table_name,0,1),
-		$field_name
-	);
-}
-?>
+foreach ($fields as $field_name => $field_type) {
+        printf("\tconst %s = '%s_%s';\n",
+        strtoupper($field_name),
+        substr($table_name, 0, 1),
+        $field_name
+    );
+    } ?>
 
 	const VIRTUAL_CONTEXT_LINK = '*_context_link';
 	const VIRTUAL_HAS_FIELDSET = '*_has_fieldset';
@@ -495,17 +490,16 @@ foreach($fields as $field_name => $field_type) {
 		
 		$columns = array(
 <?php
-foreach($fields as $field_name => $field_type) {
-	printf("\t\t\tself::%s => new DevblocksSearchField(self::%s, '%s', '%s', \$translate->_('dao.%s.%s'), null, true),\n",
-		strtoupper($field_name),
-		strtoupper($field_name),
-		$table_name,
-		$field_name,
-		$table_name,
-		$field_name
-	);
-}
-?>
+foreach ($fields as $field_name => $field_type) {
+        printf("\t\t\tself::%s => new DevblocksSearchField(self::%s, '%s', '%s', \$translate->_('dao.%s.%s'), null, true),\n",
+        strtoupper($field_name),
+        strtoupper($field_name),
+        $table_name,
+        $field_name,
+        $table_name,
+        $field_name
+    );
+    } ?>
 
 			self::VIRTUAL_CONTEXT_LINK => new DevblocksSearchField(self::VIRTUAL_CONTEXT_LINK, '*', 'context_link', $translate->_('common.links'), null, false),
 			self::VIRTUAL_HAS_FIELDSET => new DevblocksSearchField(self::VIRTUAL_HAS_FIELDSET, '*', 'has_fieldset', $translate->_('common.fieldset'), null, false),
@@ -532,12 +526,11 @@ foreach($fields as $field_name => $field_type) {
 <textarea style="width:98%;height:200px;">
 class Model_<?php echo $class_name; ?> {
 <?php
-foreach($fields as $field_name => $field_type) {
-	printf("\tpublic \$%s;\n",
-		$field_name
-	);
-};
-?>
+foreach ($fields as $field_name => $field_type) {
+        printf("\tpublic \$%s;\n",
+        $field_name
+    );
+    }; ?>
 };
 </textarea>
 
@@ -557,13 +550,12 @@ class View_<?php echo $class_name; ?> extends C4_AbstractView implements IAbstra
 
 		$this->view_columns = array(
 <?php
-foreach($fields as $field_name => $field_type) {
-	printf("\t\t\tSearchFields_%s::%s,\n",
-		$class_name,
-		strtoupper($field_name)
-	);
-}
-?>
+foreach ($fields as $field_name => $field_type) {
+        printf("\t\t\tSearchFields_%s::%s,\n",
+        $class_name,
+        strtoupper($field_name)
+    );
+    } ?>
 		);
 		// [TODO] Filter fields
 		$this->addColumnsHidden(array(
@@ -762,13 +754,12 @@ foreach($fields as $field_name => $field_type) {
 		// [TODO] Move the fields into the proper data type
 		switch($field) {
 <?php
-foreach($fields as $field_name => $field_type) {
-	printf("\t\t\tcase SearchFields_%s::%s:\n",
-		$class_name,
-		strtoupper($field_name)
-	);
-}
-?>
+foreach ($fields as $field_name => $field_type) {
+        printf("\t\t\tcase SearchFields_%s::%s:\n",
+        $class_name,
+        strtoupper($field_name)
+    );
+    } ?>
 			case 'placeholder_string':
 				$tpl->display('devblocks:cerberusweb.core::internal/views/criteria/__string.tpl');
 				break;
@@ -851,13 +842,12 @@ foreach($fields as $field_name => $field_type) {
 		// [TODO] Move fields into the right data type
 		switch($field) {
 <?php
-foreach($fields as $field_name => $field_type) {
-	printf("\t\t\tcase SearchFields_%s::%s:\n",
-		$class_name,
-		strtoupper($field_name)
-	);
-}
-?>
+foreach ($fields as $field_name => $field_type) {
+        printf("\t\t\tcase SearchFields_%s::%s:\n",
+        $class_name,
+        strtoupper($field_name)
+    );
+    } ?>
 			case 'placeholder_string':
 				$criteria = $this->_doSetCriteriaString($field, $oper, $value);
 				break;
@@ -921,11 +911,13 @@ foreach($fields as $field_name => $field_type) {
 <textarea style="width:98%;height:200px;">
 <!-- <?php echo $class_name; ?> -->
 
-<?php foreach($fields as $field_name => $field_type) { ?>
+<?php foreach ($fields as $field_name => $field_type) {
+        ?>
 <tu tuid='dao.<?php echo $table_name; ?>.<?php echo $field_name; ?>'>
-	<tuv xml:lang="en_US"><seg><?php echo ucwords(str_replace('_',' ',$field_name)); ?></seg></tuv>
+	<tuv xml:lang="en_US"><seg><?php echo ucwords(str_replace('_', ' ', $field_name)); ?></seg></tuv>
 </tu>
-<?php } ?>
+<?php 
+    } ?>
 </textarea>
 
 <h2>Context</h2>
@@ -944,7 +936,7 @@ foreach($fields as $field_name => $field_type) {
 			<params>
 				<param key="alias" value="<?php echo $table_name; ?>" />
 				<param key="dao_class" value="DAO_<?php echo $class_name; ?>" />
-				<param key="view_class" value="View_<?php echo $class_name;?>" />
+				<param key="view_class" value="View_<?php echo $class_name; ?>" />
 				<param key="options">
 					<value>
 						<data key="create" />
@@ -961,7 +953,7 @@ foreach($fields as $field_name => $field_type) {
 
 <b>api/dao/<?php echo $table_name; ?>.php</b><br>
 <textarea style="width:98%;height:200px;">
-class Context_<?php echo $class_name;?> extends Extension_DevblocksContext implements IDevblocksContextProfile, IDevblocksContextPeek { // IDevblocksContextImport
+class Context_<?php echo $class_name; ?> extends Extension_DevblocksContext implements IDevblocksContextProfile, IDevblocksContextPeek { // IDevblocksContextImport
 	function getRandom() {
 		return DAO_<?php echo $class_name; ?>::random();
 	}
@@ -1349,8 +1341,7 @@ class Context_<?php echo $class_name;?> extends Extension_DevblocksContext imple
 </textarea>
 
 <?php
-$field_prefix = strtolower(substr($table_name,0,1));
-?>
+$field_prefix = strtolower(substr($table_name, 0, 1)); ?>
 <b>templates/<?php echo $table_name; ?>/view.tpl</b><br>
 <textarea style="width:98%;height:200px;">
 {$view_context = '<?php echo $ctx_ext_id; ?>'}
@@ -1987,4 +1978,5 @@ $(document).keypress(function(event) {
 {include file="devblocks:cerberusweb.core::internal/profiles/profile_common_scripts.tpl"}
 </textarea>
 
-<?php } ?>
+<?php 
+} ?>

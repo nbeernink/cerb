@@ -87,4 +87,4 @@ $sql = sprintf("
 ", APP_DB_ENGINE);
 $db->ExecuteMaster($sql);
 
-return TRUE;
+return true;

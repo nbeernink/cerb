@@ -3,8 +3,8 @@ $db = DevblocksPlatform::getDatabaseService();
 $tables = $db->metaTables();
 
 // `webapi_credentials` ========================
-if(!isset($tables['webapi_credentials'])) {
-	$sql = sprintf("
+if (!isset($tables['webapi_credentials'])) {
+    $sql = sprintf("
 		CREATE TABLE IF NOT EXISTS webapi_credentials (
 			id INT UNSIGNED AUTO_INCREMENT,
 			label VARCHAR(255) DEFAULT '' NOT NULL,
@@ -17,9 +17,9 @@ if(!isset($tables['webapi_credentials'])) {
 			INDEX access_key (access_key)
 		) ENGINE=%s;
 	", APP_DB_ENGINE);
-	$db->ExecuteMaster($sql);
-	
-	$tables['webapi_credentials'] = 'webapi_credentials';
+    $db->ExecuteMaster($sql);
+    
+    $tables['webapi_credentials'] = 'webapi_credentials';
 }
 
-return TRUE;
+return true;

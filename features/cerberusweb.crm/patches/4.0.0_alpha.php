@@ -4,8 +4,8 @@ $tables = $db->metaTables();
 
 // ***** Application
 
-if(!isset($tables['crm_opportunity'])) {
-	$sql = sprintf("
+if (!isset($tables['crm_opportunity'])) {
+    $sql = sprintf("
 		CREATE TABLE IF NOT EXISTS crm_opportunity (
 			id INT UNSIGNED DEFAULT 0 NOT NULL,
 			campaign_id INT UNSIGNED DEFAULT 0 NOT NULL,
@@ -21,45 +21,45 @@ if(!isset($tables['crm_opportunity'])) {
 			PRIMARY KEY (id)
 		) ENGINE=%s;
 	", APP_DB_ENGINE);
-	$db->ExecuteMaster($sql);
+    $db->ExecuteMaster($sql);
 }
 
 list($columns, $indexes) = $db->metaTable('crm_opportunity');
 
-if(!isset($columns['next_action'])) {
+if (!isset($columns['next_action'])) {
     $db->ExecuteMaster("ALTER TABLE crm_opportunity ADD COLUMN next_action VARCHAR(255) DEFAULT '' NOT NULL");
 }
 
-if(!isset($columns['campaign_bucket_id'])) {
+if (!isset($columns['campaign_bucket_id'])) {
     $db->ExecuteMaster("ALTER TABLE crm_opportunity ADD COLUMN campaign_bucket_id INT UNSIGNED DEFAULT 0 NOT NULL");
 }
 
-if(!isset($indexes['campaign_id'])) {
+if (!isset($indexes['campaign_id'])) {
     $db->ExecuteMaster('ALTER TABLE crm_opportunity ADD INDEX campaign_id (campaign_id)');
 }
 
-if(!isset($indexes['campaign_bucket_id'])) {
+if (!isset($indexes['campaign_bucket_id'])) {
     $db->ExecuteMaster('ALTER TABLE crm_opportunity ADD INDEX campaign_bucket_id (campaign_bucket_id)');
 }
 
-if(!isset($indexes['primary_email_id'])) {
+if (!isset($indexes['primary_email_id'])) {
     $db->ExecuteMaster('ALTER TABLE crm_opportunity ADD INDEX primary_email_id (primary_email_id)');
 }
 
-if(!isset($indexes['updated_date'])) {
+if (!isset($indexes['updated_date'])) {
     $db->ExecuteMaster('ALTER TABLE crm_opportunity ADD INDEX updated_date (updated_date)');
 }
 
-if(!isset($indexes['worker_id'])) {
+if (!isset($indexes['worker_id'])) {
     $db->ExecuteMaster('ALTER TABLE crm_opportunity ADD INDEX worker_id (worker_id)');
 }
 
-if(!isset($indexes['is_closed'])) {
+if (!isset($indexes['is_closed'])) {
     $db->ExecuteMaster('ALTER TABLE crm_opportunity ADD INDEX is_closed (is_closed)');
 }
 
-if(!isset($tables['crm_opp_comment'])) {
-	$sql = sprintf("
+if (!isset($tables['crm_opp_comment'])) {
+    $sql = sprintf("
 		CREATE TABLE IF NOT EXISTS crm_opp_comment (
 			id INT UNSIGNED DEFAULT 0 NOT NULL,
 			opportunity_id INT UNSIGNED DEFAULT 0 NOT NULL,
@@ -69,26 +69,26 @@ if(!isset($tables['crm_opp_comment'])) {
 			PRIMARY KEY (id)
 		) ENGINE=%s;
 	", APP_DB_ENGINE);
-	$db->ExecuteMaster($sql);
+    $db->ExecuteMaster($sql);
 }
 
-if(!isset($indexes['opportunity_id'])) {
+if (!isset($indexes['opportunity_id'])) {
     $db->ExecuteMaster('ALTER TABLE crm_opp_comment ADD INDEX opportunity_id (opportunity_id)');
 }
 
-if(!isset($tables['crm_campaign'])) {
-	$sql = sprintf("
+if (!isset($tables['crm_campaign'])) {
+    $sql = sprintf("
 		CREATE TABLE IF NOT EXISTS crm_campaign (
 			id INT UNSIGNED DEFAULT 0 NOT NULL,
 			name VARCHAR(128) DEFAULT '' NOT NULL,
 			PRIMARY KEY (id)
 		) ENGINE=%s;
 	", APP_DB_ENGINE);
-	$db->ExecuteMaster($sql);
+    $db->ExecuteMaster($sql);
 }
 
-if(!isset($tables['crm_campaign_bucket'])) {
-	$sql = sprintf("
+if (!isset($tables['crm_campaign_bucket'])) {
+    $sql = sprintf("
 		CREATE TABLE IF NOT EXISTS crm_campaign_bucket (
 			id INT UNSIGNED DEFAULT 0 NOT NULL,
 			campaign_id INT UNSIGNED DEFAULT 0 NOT NULL,
@@ -96,13 +96,13 @@ if(!isset($tables['crm_campaign_bucket'])) {
 			PRIMARY KEY (id)
 		) ENGINE=%s;
 	", APP_DB_ENGINE);
-	$db->ExecuteMaster($sql);
+    $db->ExecuteMaster($sql);
 }
 
 list($columns, $indexes) = $db->metaTable('crm_campaign_bucket');
 
-if(!isset($indexes['campaign_id'])) {
+if (!isset($indexes['campaign_id'])) {
     $db->ExecuteMaster('ALTER TABLE crm_campaign_bucket ADD INDEX campaign_id (campaign_id)');
 }
 
-return TRUE;
+return true;
