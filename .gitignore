@@ -2,6 +2,6 @@
 .htaccess
 .settings/*
 .externalToolBuilders
-
+.vagrant/*
 /phpunit.phar
 /tags

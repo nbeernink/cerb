@@ -1,0 +1,76 @@
+---
+- hosts: cerb
+
+  tasks:
+    - name: Install epel-release repo
+      package: name=epel-release state=present
+
+    - name: Install the latest versions of required packages
+      package: name={{ item }} state=present
+      with_items:
+        - MySQL-python
+        - git
+        - httpd
+        - mariadb-server
+        - mod_php
+        - php-gd
+        - php-imap
+        - php-json
+        - php-mysql
+        - php-pecl-mailparse
+        - php-pecl-redis
+        - php-pecl-zendopcache
+        - policycoreutils-python
+        - redis
+        - vim-enhanced
+
+    - name: Start & enable required services
+      service: name={{ item }} state=started enabled=yes
+      with_items:
+        - httpd
+        - mariadb
+        - redis
+
+    - name: Set upload_tmp to /tmp in /etc/php.ini
+      ini_file: dest=/etc/php.ini section=PHP option=upload_tmp_dir value=/tmp
+      notify: Restart httpd
+
+    - name: Set httpd_unified SELinux boolean permanently to true
+      seboolean: name=httpd_unified state=yes persistent=yes
+
+    - name: Set httpd_can_network_connect SELinux boolean permanently to true
+      seboolean: name=httpd_can_network_connect state=yes persistent=yes
+
+    - name: Remove anonymous SQL users
+      mysql_user: name='' host_all=yes state=absent
+
+    - name: Remove test database
+      mysql_db: name=test state=absent
+
+    - name: Stat cerb dir
+      stat: path=/var/www/html/cerb
+      register: cerb
+
+    - name: Deploy cerb
+      git: repo=https://github.com/wgm/cerb.git dest=/var/www/html/cerb version=stable
+      when: not cerb.stat.exists
+      notify:
+        - Restart httpd
+        - Stat cerb dir
+
+    - name: Move framework.config.php into place
+      copy: src=files/framework.config.php dest=/var/www/html/cerb/
+
+    - name: Set ownership to apache for cerb files
+      file: path=/var/www/html/cerb/ owner=apache group=apache recurse=yes
+      when: cerb.stat.pw_name != 'apache'
+
+    - name: Create a database for cerb
+      mysql_db: name=cerb state=present encoding=utf8
+
+    - name: Create a cerb database user
+      mysql_user: name=cerb password=vagrant priv=cerb.*:ALL state=present
+
+  handlers:
+    - name: Restart httpd
+      service: name=httpd state=restarted
