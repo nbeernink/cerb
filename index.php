@@ -40,31 +40,31 @@
  *	 Founders at Webgroup Media LLC; Developers of Cerb
  */
 
-if(version_compare(PHP_VERSION, "5.3", "<")) {
-	header('Status: 500');
-	die("Cerb requires PHP 5.3 or later.");
+if (version_compare(PHP_VERSION, '5.3', '<')) {
+    header('Status: 500');
+    die('Cerb requires PHP 5.3 or later.');
 }
 
-if(!extension_loaded('mysqli')) {
-	header('Status: 500');
-	die("Cerb requires the 'mysqli' PHP extension.  Please enable it.");
+if (!extension_loaded('mysqli')) {
+    header('Status: 500');
+    die("Cerb requires the 'mysqli' PHP extension.  Please enable it.");
 }
 
-require(getcwd() . '/framework.config.php');
-require(DEVBLOCKS_PATH . 'Devblocks.class.php');
+require getcwd().'/framework.config.php';
+require DEVBLOCKS_PATH.'Devblocks.class.php';
 
 // If this is our first run, redirect to the installer
-if('' == APP_DB_HOST
-	|| '' == APP_DB_DATABASE
-	|| DevblocksPlatform::isDatabaseEmpty()) {
-		DevblocksPlatform::init();
-		$url_writer = DevblocksPlatform::getUrlService();
-		$base_url = rtrim(preg_replace("/index\.php\/$/i",'',$url_writer->write('',true)),"/");
-		header('Location: '.$base_url.'/install/index.php');
-		exit;
-	}
+if ('' == APP_DB_HOST
+    || '' == APP_DB_DATABASE
+    || DevblocksPlatform::isDatabaseEmpty()) {
+    DevblocksPlatform::init();
+    $url_writer = DevblocksPlatform::getUrlService();
+    $base_url = rtrim(preg_replace("/index\.php\/$/i", '', $url_writer->write('', true)), '/');
+    header('Location: '.$base_url.'/install/index.php');
+    exit;
+}
 
-require(APP_PATH . '/api/Application.class.php');
+require APP_PATH.'/api/Application.class.php';
 
 DevblocksPlatform::init();
 DevblocksPlatform::setExtensionDelegate('Cerb_DevblocksExtensionDelegate');
@@ -73,11 +73,11 @@ DevblocksPlatform::setHandlerSession('Cerb_DevblocksSessionHandler');
 $request = DevblocksPlatform::readRequest();
 
 // Do we need an update first?
-if(!DevblocksPlatform::versionConsistencyCheck()) {
-	if(0 != strcasecmp(@$request->path[0],"update")) {
-		DevblocksPlatform::redirect(new DevblocksHttpResponse(array('update','locked')));
-		exit;
-	}
+if (!DevblocksPlatform::versionConsistencyCheck()) {
+    if (0 != strcasecmp(@$request->path[0], 'update')) {
+        DevblocksPlatform::redirect(new DevblocksHttpResponse(['update', 'locked']));
+        exit;
+    }
 }
 
 // Request
@@ -95,17 +95,18 @@ DevblocksPlatform::setLocale((isset($_SESSION['locale']) && !empty($_SESSION['lo
 DevblocksPlatform::setTimezone();
 
 // Time format
-if(isset($_SESSION['time_format']))
-	DevblocksPlatform::setDateTimeFormat($_SESSION['time_format']);
+if (isset($_SESSION['time_format'])) {
+    DevblocksPlatform::setDateTimeFormat($_SESSION['time_format']);
+}
 
 // Initialize Logging
 
-if(method_exists('DevblocksPlatform','getConsoleLog')) {
-	$timeout = ini_get('max_execution_time');
-	$logger = DevblocksPlatform::getConsoleLog();
-	$logger->info("[Devblocks] ** Platform starting (".date("r").") **");
-	$logger->info('[Devblocks] Time Limit: '. (($timeout) ? $timeout : 'unlimited') ." secs");
-	$logger->info('[Devblocks] Memory Limit: '. ini_get('memory_limit'));
+if (method_exists('DevblocksPlatform', 'getConsoleLog')) {
+    $timeout = ini_get('max_execution_time');
+    $logger = DevblocksPlatform::getConsoleLog();
+    $logger->info('[Devblocks] ** Platform starting ('.date('r').') **');
+    $logger->info('[Devblocks] Time Limit: '.(($timeout) ? $timeout : 'unlimited').' secs');
+    $logger->info('[Devblocks] Memory Limit: '.ini_get('memory_limit'));
 }
 
 // [JAS]: HTTP Request (App->Platform)
