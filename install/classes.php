@@ -39,106 +39,113 @@
  * - Jeff Standen and Dan Hildebrandt
  *	 Founders at Webgroup Media LLC; Developers of Cerb
  */
-require_once(DEVBLOCKS_PATH . 'Devblocks.class.php');
+require_once DEVBLOCKS_PATH.'Devblocks.class.php';
 
-class Exception_CerbInstaller extends Exception {}
+class Exception_CerbInstaller extends Exception
+{
+}
 
 /**
  * @author Jeff Standen <jeff@webgroupmedia.com> [JAS]
  */
-class CerberusInstaller {
-	
-	/**
-	 * @param ... [TODO]
-	 * @return string 'config', 'tmp' or FALSE
-	 */
-	public static function saveFrameworkConfig($db_driver, $db_engine, $encoding, $db_server, $db_name, $db_user, $db_pass) {
-		$buffer = array();
-		@$fp_in = fopen(APP_PATH . "/framework.config.php","r");
-		
-		if(!$fp_in) return FALSE;
-		
-		@$client_ip = (string) DevblocksPlatform::getClientIp();
-		
-		while(!feof($fp_in)) {
-			$line = fgets($fp_in);
-			$token = null;
-			$value = null;
-			
-			// Check for particular define lines to rewrite
-			if(preg_match('/^define\([\'\"](.*?)[\'\"].*?\,.*?[\'\"](.*?)[\'\"]\).*?$/i', $line, $matches)) {
-				$token = $matches[1];
-				
-				switch(strtoupper($token)) {
-					case "APP_DB_ENGINE":
-						$value = $db_engine;
-						break;
-					case "APP_DB_HOST":
-						$value = $db_server;
-						break;
-					case "APP_DB_DATABASE":
-						$value = $db_name;
-						break;
-					case "APP_DB_USER":
-						$value = $db_user;
-						break;
-					case "APP_DB_PASS":
-						$value = $db_pass;
-						break;
-					case "LANG_CHARSET_CODE":
-						$value = (0==strcasecmp($encoding,'latin1')) ? 'iso-8859-1' : 'utf-8';
-						break;
-					case "DB_CHARSET_CODE":
-						$value = (0==strcasecmp($encoding,'latin1')) ? 'latin1' : 'utf8';
-						break;
-					case "AUTHORIZED_IPS_DEFAULTS":
-						$value = $client_ip;
-						break;
-				}
-				
-				if(!empty($token) && !empty($value)) {
-					$line = sprintf("define('%s','%s');",$token, self::escape($value));
-				}
-			}
-			
-			$buffer[] = str_replace(array("\r","\n"),'',$line); // strip CRLF
-		}
-		
-		if(is_resource($fp_in))
-			fclose($fp_in);
-		
-		$saved = FALSE;
-		
-		// [JAS]: First try to just write back to the config file directly
-		if(is_writeable(APP_PATH . "/framework.config.php")
-			&& false !== (@$fp_out = fopen(APP_PATH . "/framework.config.php","w"))) {
-			
-			if(is_array($buffer)) {
-				$lines = count($buffer);
-				for($x=0;$x<$lines;$x++) {
-					$line = $buffer[$x];
-					fwrite($fp_out,$line,strlen($line));
-					if($x+1 != $lines)
-						fwrite($fp_out,"\n",1);
-				}
-			}
-			
-			@fclose($fp_out);
-			$saved = "config";
-		}
-		
-		if(empty($saved)) {
-			$saved = implode("\n", $buffer);
-		}
-		
-		return $saved;
-	}
-	
-	private static function escape($string) {
-		$from = array("'",'"');
-		$to = array("\\'",'\"');
-		
-		return str_replace($from, $to, $string);
-	}
+class CerberusInstaller
+{
+    /**
+     * @param ... [TODO]
+     *
+     * @return string 'config', 'tmp' or FALSE
+     */
+    public static function saveFrameworkConfig($db_driver, $db_engine, $encoding, $db_server, $db_name, $db_user, $db_pass)
+    {
+        $buffer = [];
+        @$fp_in = fopen(APP_PATH.'/framework.config.php', 'r');
+
+        if (!$fp_in) {
+            return false;
+        }
+
+        @$client_ip = (string) DevblocksPlatform::getClientIp();
+
+        while (!feof($fp_in)) {
+            $line = fgets($fp_in);
+            $token = null;
+            $value = null;
+
+            // Check for particular define lines to rewrite
+            if (preg_match('/^define\([\'\"](.*?)[\'\"].*?\,.*?[\'\"](.*?)[\'\"]\).*?$/i', $line, $matches)) {
+                $token = $matches[1];
+
+                switch (strtoupper($token)) {
+                    case 'APP_DB_ENGINE':
+                        $value = $db_engine;
+                        break;
+                    case 'APP_DB_HOST':
+                        $value = $db_server;
+                        break;
+                    case 'APP_DB_DATABASE':
+                        $value = $db_name;
+                        break;
+                    case 'APP_DB_USER':
+                        $value = $db_user;
+                        break;
+                    case 'APP_DB_PASS':
+                        $value = $db_pass;
+                        break;
+                    case 'LANG_CHARSET_CODE':
+                        $value = (0 == strcasecmp($encoding, 'latin1')) ? 'iso-8859-1' : 'utf-8';
+                        break;
+                    case 'DB_CHARSET_CODE':
+                        $value = (0 == strcasecmp($encoding, 'latin1')) ? 'latin1' : 'utf8';
+                        break;
+                    case 'AUTHORIZED_IPS_DEFAULTS':
+                        $value = $client_ip;
+                        break;
+                }
+
+                if (!empty($token) && !empty($value)) {
+                    $line = sprintf("define('%s','%s');", $token, self::escape($value));
+                }
+            }
+
+            $buffer[] = str_replace(["\r", "\n"], '', $line); // strip CRLF
+        }
+
+        if (is_resource($fp_in)) {
+            fclose($fp_in);
+        }
+
+        $saved = false;
+
+        // [JAS]: First try to just write back to the config file directly
+        if (is_writable(APP_PATH.'/framework.config.php')
+            && false !== (@$fp_out = fopen(APP_PATH.'/framework.config.php', 'w'))) {
+            if (is_array($buffer)) {
+                $lines = count($buffer);
+                for ($x = 0; $x < $lines; $x++) {
+                    $line = $buffer[$x];
+                    fwrite($fp_out, $line, strlen($line));
+                    if ($x + 1 != $lines) {
+                        fwrite($fp_out, "\n", 1);
+                    }
+                }
+            }
+
+            @fclose($fp_out);
+            $saved = 'config';
+        }
+
+        if (empty($saved)) {
+            $saved = implode("\n", $buffer);
+        }
+
+        return $saved;
+    }
+
+    private static function escape($string)
+    {
+        $from = ["'", '"'];
+        $to = ["\\'", '\"'];
+
+        return str_replace($from, $to, $string);
+    }
 }
-?>
