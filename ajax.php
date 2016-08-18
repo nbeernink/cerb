@@ -39,11 +39,11 @@
  * - Jeff Standen and Dan Hildebrandt
  *	 Founders at Webgroup Media LLC; Developers of Cerb
  */
-require(getcwd() . '/framework.config.php');
-require(DEVBLOCKS_PATH . 'Devblocks.class.php');
-require(APP_PATH . '/api/Application.class.php');
+require getcwd().'/framework.config.php';
+require DEVBLOCKS_PATH.'Devblocks.class.php';
+require APP_PATH.'/api/Application.class.php';
 
-header("Content-type: text/html; charset=".LANG_CHARSET_CODE);
+header('Content-type: text/html; charset='.LANG_CHARSET_CODE);
 
 $request = DevblocksPlatform::readRequest();
 
@@ -66,8 +66,9 @@ DevblocksPlatform::setLocale((isset($_SESSION['locale']) && !empty($_SESSION['lo
 DevblocksPlatform::setTimezone();
 
 // Time format
-if(isset($_SESSION['time_format']))
-	DevblocksPlatform::setDateTimeFormat($_SESSION['time_format']);
+if (isset($_SESSION['time_format'])) {
+    DevblocksPlatform::setDateTimeFormat($_SESSION['time_format']);
+}
 
 // Scope
 $tpl = DevblocksPlatform::getTemplateService();
@@ -77,14 +78,14 @@ $tpl->assign('visit', $session->getVisit());
 $tpl->assign('active_worker', $worker);
 $tpl->assign('settings', $settings);
 
-if(!empty($worker)) {
-	$active_worker_memberships = $worker->getMemberships();
-	$tpl->assign('active_worker_memberships', $active_worker_memberships);
-	
-	$keyboard_shortcuts = intval(DAO_WorkerPref::get($worker->id,'keyboard_shortcuts', 1));
-	$tpl->assign('pref_keyboard_shortcuts', $keyboard_shortcuts);
+if (!empty($worker)) {
+    $active_worker_memberships = $worker->getMemberships();
+    $tpl->assign('active_worker_memberships', $active_worker_memberships);
+
+    $keyboard_shortcuts = intval(DAO_WorkerPref::get($worker->id, 'keyboard_shortcuts', 1));
+    $tpl->assign('pref_keyboard_shortcuts', $keyboard_shortcuts);
 }
 
-CerberusApplication::processRequest($request,true);
+CerberusApplication::processRequest($request, true);
 
 exit;
